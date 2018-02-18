@@ -1,0 +1,9 @@
+{
+  "REPO_URL":"git@github.com:corazzon/azure-djangogirls-seoul-2017.git",
+  "PROJECT_NAME":"mysite",
+  "REMOTE_HOST":"52.231.31.159",
+  "REMOTE_USER":"djangogirls",
+  "STATIC_ROOT":"static",
+  "STATIC_URL":"static",
+  "MEDIA_ROOT":"media"
+}
