@@ -1,25 +1,45 @@
-from django.shortcuts import get_object_or_404, render, resolve_url
-from django.views.generic import ListView, DetailView, CreateView
-from blog.models import Post, Comment
-from blog.forms import CommentForm
+from django.shortcuts import render
+from django.utils import timezone
+from .models import Post
+from django.shortcuts import render, get_object_or_404
+from .forms import PostForm
+from django.shortcuts import redirect
 
 
-post_list = ListView.as_view(model=Post)
+def post_list(request):
+    posts = Post.objects.filter(
+        published_date__lte=timezone.now()).order_by('published_date')
+    return render(request, 'blog/post_list.html', {'posts': posts})
 
-post_detail = DetailView.as_view(model=Post)
+
+def post_detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    return render(request, 'blog/post_detail.html', {'post': post})
 
 
-class CommentCreateView(CreateView):
-    model = Comment
-    form_class = CommentForm
+def post_new(request):
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.published_date = timezone.now()
+            post.save()
+            return redirect('post_detail', pk=post.pk)
+    else:
+        form = PostForm()
+    return render(request, 'blog/post_edit.html', {'form': form})
 
-    def form_valid(self, form):
-        comment = form.save(commit=False)
-        comment.post = get_object_or_404(Post, pk=self.kwargs['post_pk'])
-        return super(CommentCreateView, self).form_valid(form)
-
-    def get_success_url(self):
-        return resolve_url('blog:post_detail', self.kwargs['post_pk'])
-
-comment_new = CommentCreateView.as_view()
-
+def post_edit(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        form = PostForm(instance=post)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.published_date = timezone.now()
+            post.save()
+            return redirect('post_detail', pk=post.pk)
+    else:
+        form = PostForm(instance=post)
+    return render(request, 'blog/post_edit.html', {'form': form})
