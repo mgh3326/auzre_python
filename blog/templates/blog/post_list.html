@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+<meta charst="utf-8" />
+<title>Django is Best !!!</title>
+</head>
+<body>
+    <table>
+        <tbody>
+            {% for post in post_list %}
+                <tr>
+                    <td>
+                        <a href="{% url "blog:post_detail" post.pk %}">
+                            {{ post.title }}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
